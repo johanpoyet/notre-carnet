@@ -214,7 +214,6 @@ body{ margin:0; background:var(--paper); }
   background-clip:text;
   -webkit-text-fill-color:transparent;
   color:var(--ink);
-  width:fit-content;
 }
 .cc-role{
   font-family:'Space Mono', monospace;
