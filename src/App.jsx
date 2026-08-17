@@ -600,6 +600,35 @@ label.cc-label{
   background:rgba(255,255,255,0.35);
 }
 
+.empty-state{
+  text-align:center;
+  padding:30px 18px;
+  border:1.5px dashed var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,0.35);
+}
+.empty-state-icon{
+  width:46px; height:46px;
+  border-radius:50%;
+  margin:0 auto 12px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--rose), var(--berry));
+  color:#fff;
+  box-shadow:0 8px 18px -8px rgba(196,58,100,0.55);
+}
+.empty-state-title{
+  font-weight:600;
+  font-size:14px;
+  color:var(--ink);
+  margin-bottom:4px;
+}
+.empty-state-sub{
+  font-size:12.5px;
+  color:var(--ink-soft);
+  max-width:260px;
+  margin:0 auto;
+}
+
 .tab-panel{ animation:tabIn .3s cubic-bezier(0.16, 0.84, 0.44, 1); }
 @keyframes tabIn{
   from{ opacity:0; transform:translateY(8px); }
@@ -610,6 +639,53 @@ label.cc-label{
 ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:999px; }
 ::-webkit-scrollbar-thumb:hover{ background:var(--ink-soft); }
 
+.confetti-layer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:80;
+  overflow:hidden;
+}
+.confetti-piece{
+  position:absolute;
+  top:-14px;
+  border-radius:2px;
+  opacity:0;
+  animation:confettiFall var(--dur, 1.8s) cubic-bezier(0.15, 0.6, 0.4, 1) forwards;
+  animation-delay:var(--delay, 0s);
+}
+@keyframes confettiFall{
+  0%{ opacity:0; transform:translate(0, 0) rotate(0deg); }
+  8%{ opacity:1; }
+  100%{ opacity:0; transform:translate(var(--drift, 0px), 100vh) rotate(var(--rot, 360deg)); }
+}
+
+.onboarding-icon{
+  width:56px; height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--rose), var(--berry));
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 14px;
+  color:#fff;
+  animation:heartbeat 1.8s ease-in-out infinite;
+  box-shadow:0 8px 20px -8px rgba(196,58,100,0.6);
+}
+@keyframes heartbeat{
+  0%, 100%{ transform:scale(1); }
+  15%{ transform:scale(1.12); }
+  30%{ transform:scale(1); }
+  45%{ transform:scale(1.08); }
+  60%{ transform:scale(1); }
+}
+.stagger-in{
+  animation:fadeUp .45s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+  animation-delay:var(--stagger-delay, 0s);
+}
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
 @media (prefers-reduced-motion: reduce){
   .wheel-disc{ transition:none; }
   .result-ticket{ animation:none; }
@@ -617,6 +693,9 @@ label.cc-label{
   .tab-panel{ animation:none; }
   .modal-card{ animation:none; }
   .modal-overlay{ animation:none; }
+  .confetti-layer{ display:none; }
+  .onboarding-icon{ animation:none; }
+  .stagger-in{ animation:none; }
 }
 `;
 
@@ -631,6 +710,60 @@ function LoadingScreen() {
         <div style={{ fontSize: 26, marginBottom: 8 }}>💌</div>
         Ouverture du carnet…
       </div>
+    </div>
+  );
+}
+
+function Confetti({ burstId }) {
+  const pieces = useMemo(() => {
+    if (!burstId) return [];
+    const colors = ["var(--berry)", "var(--rose)", "var(--mustard)", "var(--sage)", "var(--plum)"];
+    return Array.from({ length: 28 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 0.25,
+      duration: 1.5 + Math.random() * 0.9,
+      drift: (Math.random() - 0.5) * 140,
+      rot: 360 + Math.random() * 360,
+      color: colors[i % colors.length],
+      wide: i % 3 === 0,
+    }));
+  }, [burstId]);
+
+  if (!burstId) return null;
+
+  return (
+    <div className="confetti-layer" aria-hidden="true">
+      {pieces.map((p) => (
+        <span
+          key={p.id}
+          className="confetti-piece"
+          style={{
+            left: `${p.left}%`,
+            background: p.color,
+            width: p.wide ? 10 : 7,
+            height: p.wide ? 7 : 13,
+            "--delay": `${p.delay}s`,
+            "--dur": `${p.duration}s`,
+            "--drift": `${p.drift}px`,
+            "--rot": `${p.rot}deg`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, title, subtitle }) {
+  return (
+    <div className="empty-state">
+      {Icon && (
+        <div className="empty-state-icon">
+          <Icon size={20} />
+        </div>
+      )}
+      <div className="empty-state-title">{title}</div>
+      {subtitle && <div className="empty-state-sub">{subtitle}</div>}
     </div>
   );
 }
@@ -826,7 +959,13 @@ function WheelTab({ items, onChangeItems }) {
           <RefreshCw size={16} /> {spinning ? "Ça tourne…" : "Faire tourner"}
         </button>
 
-        {n === 0 && <div className="empty-note">Active au moins une catégorie pour lancer la roue.</div>}
+        {n === 0 && (
+          <EmptyState
+            icon={RefreshCw}
+            title="La roue est vide"
+            subtitle="Active au moins une catégorie pour la faire tourner."
+          />
+        )}
 
         {result && !spinning && (
           <div className="ticket result-ticket" style={{ marginTop: 4, textAlign: "center", width: "100%" }}>
@@ -887,7 +1026,18 @@ function QuestionsTab({ qLog, onUpdateLog, whoami, settings }) {
   const entry = qLog[key] || { qIndex: idx, picks: { A: null, B: null } };
   const partnerRole = whoami === "A" ? "B" : "A";
   const bothAnswered = entry.picks.A && entry.picks.B;
+  const agree = bothAnswered && entry.picks.A === entry.picks.B;
   const nameFor = (role) => (role === "A" ? settings.nameA : settings.nameB);
+
+  const [burstId, setBurstId] = useState(0);
+  const [celebratedKey, setCelebratedKey] = useState(null);
+
+  useEffect(() => {
+    if (agree && celebratedKey !== key) {
+      setCelebratedKey(key);
+      setBurstId((n) => n + 1);
+    }
+  }, [agree, key, celebratedKey]);
 
   function choose(role) {
     const newEntry = { ...entry, picks: { ...entry.picks, [whoami]: role } };
@@ -902,6 +1052,7 @@ function QuestionsTab({ qLog, onUpdateLog, whoami, settings }) {
 
   return (
     <div>
+      <Confetti key={burstId} burstId={burstId} />
       <div className="section-title">Question du jour</div>
 
       <div className="ticket">
@@ -1039,7 +1190,13 @@ function WatchlistTab({ items, onChange }) {
       </button>
 
       <div style={{ marginTop: 16 }}>
-        {toWatch.length === 0 && <div className="empty-note">Rien à voir pour l'instant, ajoutez un titre !</div>}
+        {toWatch.length === 0 && (
+          <EmptyState
+            icon={Film}
+            title="Rien à voir pour l'instant"
+            subtitle="Ajoute un titre pour commencer la liste."
+          />
+        )}
         {toWatch.map((it) => (
           <div className="stub-row" key={it.id} style={{ borderColor: highlighted === it.id ? "var(--berry)" : "var(--line)", boxShadow: highlighted === it.id ? "0 0 0 2px var(--berry)" : "none" }}>
             <div className="stub-main">
@@ -1094,20 +1251,34 @@ function OnboardingModal({ onSave }) {
   return (
     <div className="modal-overlay">
       <div className="modal-card">
-        <div className="modal-title">Bienvenue dans votre carnet 💌</div>
-        <div className="modal-sub">Quelques infos pour tout personnaliser.</div>
+        <div className="onboarding-icon stagger-in" style={{ "--stagger-delay": "0s" }}>
+          <Heart size={24} fill="#fff" />
+        </div>
+        <div className="modal-title stagger-in" style={{ "--stagger-delay": "0.06s", textAlign: "center" }}>
+          Bienvenue dans votre carnet 💌
+        </div>
+        <div className="modal-sub stagger-in" style={{ "--stagger-delay": "0.1s", textAlign: "center" }}>
+          Quelques infos pour tout personnaliser.
+        </div>
 
-        <label className="cc-label">Premier prénom</label>
-        <input className="field" value={nameA} onChange={(e) => setNameA(e.target.value)} style={{ marginBottom: 12 }} />
+        <div className="stagger-in" style={{ "--stagger-delay": "0.16s" }}>
+          <label className="cc-label">Premier prénom</label>
+          <input className="field" value={nameA} onChange={(e) => setNameA(e.target.value)} style={{ marginBottom: 12 }} />
+        </div>
 
-        <label className="cc-label">Deuxième prénom</label>
-        <input className="field" value={nameB} onChange={(e) => setNameB(e.target.value)} style={{ marginBottom: 12 }} />
+        <div className="stagger-in" style={{ "--stagger-delay": "0.22s" }}>
+          <label className="cc-label">Deuxième prénom</label>
+          <input className="field" value={nameB} onChange={(e) => setNameB(e.target.value)} style={{ marginBottom: 12 }} />
+        </div>
 
-        <label className="cc-label">Ensemble depuis le</label>
-        <input type="date" className="field" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ marginBottom: 18 }} />
+        <div className="stagger-in" style={{ "--stagger-delay": "0.28s" }}>
+          <label className="cc-label">Ensemble depuis le</label>
+          <input type="date" className="field" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ marginBottom: 18 }} />
+        </div>
 
         <button
-          className="btn btn-primary btn-block"
+          className="btn btn-primary btn-block stagger-in"
+          style={{ "--stagger-delay": "0.34s" }}
           disabled={!nameA.trim() || !nameB.trim() || !startDate}
           onClick={() => onSave({ nameA: nameA.trim(), nameB: nameB.trim(), startDate })}
         >
@@ -1201,6 +1372,7 @@ export default function App() {
   const [qLog, setQLog] = useState({});
   const [tab, setTab] = useState("nous");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [welcomeBurst, setWelcomeBurst] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -1256,6 +1428,11 @@ export default function App() {
   const persistSettings = (s) => { setSettings(s); setShared("settings", s); setSettingsOpen(false); };
   const persistWhoami = (role) => { setWhoami(role); setLocal("whoami", role); };
 
+  function handleOnboardingSave(s) {
+    persistSettings(s);
+    setWelcomeBurst((n) => n + 1);
+  }
+
   async function resetAll() {
     await Promise.all([
       deleteShared("settings"),
@@ -1286,8 +1463,9 @@ export default function App() {
   return (
     <div className="cc-root">
       <style>{CSS}</style>
+      <Confetti key={welcomeBurst} burstId={welcomeBurst} />
 
-      {!settings && <OnboardingModal onSave={persistSettings} />}
+      {!settings && <OnboardingModal onSave={handleOnboardingSave} />}
       {settings && !whoami && <RolePickerModal settings={settings} onPick={persistWhoami} />}
 
       {settings && whoami && (
