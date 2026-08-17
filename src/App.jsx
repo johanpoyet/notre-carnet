@@ -786,8 +786,8 @@ function WheelTab({ items, onChangeItems }) {
     setRotation((r) => r + extraSpins + delta);
   }
 
-  function handleTransitionEnd() {
-    if (!spinning) return;
+  function handleTransitionEnd(e) {
+    if (!spinning || e.propertyName !== "transform") return;
     setSpinning(false);
     setResult(pending);
   }
