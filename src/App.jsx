@@ -20,7 +20,7 @@ import { getShared, setShared, deleteShared, subscribeShared, getLocal, setLocal
 
 const TAGS = [
   { key: "repas", label: "Repas", emoji: "🍽️", color: "#D9A441" },
-  { key: "sortie", label: "Sortie", emoji: "🎉", color: "#A83B5E" },
+  { key: "sortie", label: "Sortie", emoji: "🎉", color: "#C43A64" },
   { key: "cocooning", label: "Cocooning", emoji: "🛋️", color: "#6B4C6E" },
   { key: "exterieur", label: "Extérieur", emoji: "🌳", color: "#7C8F6D" },
 ];
@@ -140,8 +140,9 @@ const CSS = `
   --card:#FFFBF6;
   --ink:#2B2438;
   --ink-soft:#786C86;
-  --berry:#A83B5E;
-  --berry-deep:#7E2A45;
+  --berry:#C43A64;
+  --berry-deep:#8C1F3D;
+  --rose:#E8748F;
   --mustard:#D9A441;
   --sage:#7C8F6D;
   --plum:#6B4C6E;
@@ -165,12 +166,12 @@ body{ margin:0; background:var(--paper); }
   position:fixed;
   inset:0;
   background-image:
-    radial-gradient(680px 560px at 6% -6%, rgba(217,164,65,0.24), transparent 62%),
-    radial-gradient(640px 560px at 100% 4%, rgba(168,59,94,0.19), transparent 60%),
-    radial-gradient(700px 620px at -6% 50%, rgba(124,143,109,0.19), transparent 62%),
-    radial-gradient(680px 620px at 106% 62%, rgba(217,164,65,0.14), transparent 60%),
-    radial-gradient(740px 660px at -2% 100%, rgba(107,76,110,0.22), transparent 62%),
-    radial-gradient(720px 640px at 104% 100%, rgba(168,59,94,0.2), transparent 60%);
+    radial-gradient(680px 560px at 6% -6%, rgba(232,116,143,0.28), transparent 62%),
+    radial-gradient(640px 560px at 100% 4%, rgba(196,58,100,0.22), transparent 60%),
+    radial-gradient(700px 620px at -6% 50%, rgba(140,31,61,0.19), transparent 62%),
+    radial-gradient(680px 620px at 106% 62%, rgba(217,164,65,0.1), transparent 60%),
+    radial-gradient(740px 660px at -2% 100%, rgba(232,116,143,0.24), transparent 62%),
+    radial-gradient(720px 640px at 104% 100%, rgba(140,31,61,0.24), transparent 60%);
   pointer-events:none;
   z-index:0;
 }
@@ -208,7 +209,7 @@ body{ margin:0; background:var(--paper); }
   font-weight:600;
   font-size:22px;
   letter-spacing:-0.01em;
-  background:linear-gradient(100deg, var(--berry) 0%, var(--berry-deep) 45%, var(--plum) 100%);
+  background:linear-gradient(100deg, var(--rose) 0%, var(--berry) 50%, var(--berry-deep) 100%);
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -241,7 +242,7 @@ body{ margin:0; background:var(--paper); }
   border-radius:16px;
   padding:20px;
   position:relative;
-  box-shadow:0 2px 4px rgba(43,36,56,0.05), 0 14px 30px -12px rgba(168,59,94,0.28);
+  box-shadow:0 2px 4px rgba(43,36,56,0.05), 0 14px 30px -12px rgba(196,58,100,0.28);
   overflow:hidden;
 }
 .ticket::before{
@@ -250,7 +251,7 @@ body{ margin:0; background:var(--paper); }
   top:0; left:18px; right:18px;
   height:4px;
   border-radius:0 0 6px 6px;
-  background:linear-gradient(90deg, var(--mustard), var(--berry), var(--plum));
+  background:linear-gradient(90deg, var(--rose), var(--berry), var(--berry-deep));
 }
 
 .stub-row{
@@ -331,15 +332,15 @@ body{ margin:0; background:var(--paper); }
 .btn:active{ transform:scale(0.97); }
 .btn:disabled{ opacity:.45; cursor:not-allowed; }
 .btn-primary{ background:var(--ink); color:var(--paper); box-shadow:0 6px 16px -6px rgba(43,36,56,0.55); }
-.btn-berry{ background:linear-gradient(135deg, var(--berry), var(--berry-deep)); color:#fff; box-shadow:0 6px 18px -6px rgba(168,59,94,0.65); animation:btnGlow 2.6s ease-in-out infinite; }
+.btn-berry{ background:linear-gradient(135deg, var(--berry), var(--berry-deep)); color:#fff; box-shadow:0 6px 18px -6px rgba(196,58,100,0.65); animation:btnGlow 2.6s ease-in-out infinite; }
 .btn-ghost{ background:transparent; color:var(--ink); border:1.5px solid var(--line); }
 .btn-danger{ background:#B94A3D; color:#fff; box-shadow:0 6px 16px -6px rgba(185,74,61,0.55); }
 .btn-block{ width:100%; }
 .btn-sm{ padding:7px 10px; font-size:12.5px; border-radius:10px; }
 .btn:disabled{ animation:none; }
 @keyframes btnGlow{
-  0%, 100%{ box-shadow:0 6px 18px -6px rgba(168,59,94,0.65); }
-  50%{ box-shadow:0 6px 22px -4px rgba(168,59,94,0.9); }
+  0%, 100%{ box-shadow:0 6px 18px -6px rgba(196,58,100,0.65); }
+  50%{ box-shadow:0 6px 22px -4px rgba(196,58,100,0.9); }
 }
 @media (hover:hover){
   .btn:not(:disabled):hover{ transform:translateY(-1px); }
@@ -371,7 +372,7 @@ body{ margin:0; background:var(--paper); }
   box-shadow:inset 0 1px 3px rgba(43,36,56,0.06);
   transition:border-color .15s ease, box-shadow .15s ease;
 }
-.field:focus{ border-color:var(--berry); outline:none; box-shadow:inset 0 1px 3px rgba(43,36,56,0.06), 0 0 0 3px rgba(168,59,94,0.15); }
+.field:focus{ border-color:var(--berry); outline:none; box-shadow:inset 0 1px 3px rgba(43,36,56,0.06), 0 0 0 3px rgba(196,58,100,0.15); }
 label.cc-label{
   font-size:12px;
   font-weight:600;
@@ -395,7 +396,7 @@ label.cc-label{
   content:'';
   width:9px; height:9px;
   border-radius:50%;
-  background:linear-gradient(135deg, var(--mustard), var(--berry));
+  background:linear-gradient(135deg, var(--rose), var(--berry));
   flex-shrink:0;
 }
 .dashed-divider{
@@ -439,7 +440,7 @@ label.cc-label{
   position:relative;
 }
 .wheel-disc.spinning{
-  box-shadow:0 0 0 2px var(--line), 0 0 0 10px rgba(168,59,94,0.12), 0 16px 34px rgba(43,36,56,0.24);
+  box-shadow:0 0 0 2px var(--line), 0 0 0 10px rgba(196,58,100,0.12), 0 16px 34px rgba(43,36,56,0.24);
 }
 .wheel-hub{
   position:absolute; top:50%; left:50%;
@@ -497,7 +498,7 @@ label.cc-label{
   font-family:'Space Mono', monospace;
   font-size:28px;
   font-weight:700;
-  background:linear-gradient(100deg, var(--berry), var(--plum));
+  background:linear-gradient(100deg, var(--rose), var(--berry-deep));
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -535,7 +536,7 @@ label.cc-label{
   transition:background .18s ease, color .18s ease;
 }
 .nav-btn svg{ transition:transform .18s ease; }
-.nav-btn.active{ background:linear-gradient(135deg, var(--berry), var(--berry-deep)); color:#fff; box-shadow:0 4px 14px -3px rgba(168,59,94,0.7); }
+.nav-btn.active{ background:linear-gradient(135deg, var(--berry), var(--berry-deep)); color:#fff; box-shadow:0 4px 14px -3px rgba(196,58,100,0.7); }
 .nav-btn.active svg{ transform:scale(1.12); }
 .nav-btn:active svg{ transform:scale(0.9); }
 
@@ -679,7 +680,7 @@ function NousTab({ settings, stats, onChangeStats }) {
           Carte d'embarquement
         </div>
         <div className="cc-wordmark" style={{ fontSize: 26, margin: "8px 0 2px" }}>
-          {settings.nameA} <Heart size={18} style={{ display: "inline", verticalAlign: -2 }} color="#A83B5E" fill="#A83B5E" /> {settings.nameB}
+          {settings.nameA} <Heart size={18} style={{ display: "inline", verticalAlign: -2 }} color="#C43A64" fill="#C43A64" /> {settings.nameB}
         </div>
         <div style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>Embarqués ensemble le {formatDateFr(settings.startDate)}</div>
 
