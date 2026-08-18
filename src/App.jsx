@@ -1326,8 +1326,8 @@ function RolePickerModal({ settings, onPick }) {
 
   if (step === "pick") {
     return (
-      <div className="modal-overlay" style={{ alignItems: "center" }}>
-        <div className="modal-card" style={{ borderRadius: 22 }}>
+      <div className="modal-overlay" style={{ alignItems: "center", padding: "0 24px" }}>
+        <div className="modal-card" style={{ borderRadius: 22, maxWidth: 340 }}>
           <div className="modal-title">Et toi, tu es qui ?</div>
           <div className="modal-sub">Cet appareil s'en souviendra pour le petit jeu de questions.</div>
           <div style={{ display: "flex", gap: 10 }}>
@@ -1340,8 +1340,8 @@ function RolePickerModal({ settings, onPick }) {
   }
 
   return (
-    <div className="modal-overlay" style={{ alignItems: "center" }}>
-      <div className="modal-card" style={{ textAlign: "center", borderRadius: 22 }}>
+    <div className="modal-overlay" style={{ alignItems: "center", padding: "0 24px" }}>
+      <div className="modal-card" style={{ textAlign: "center", borderRadius: 22, maxWidth: 340 }}>
         <div className="onboarding-icon">
           <Heart size={24} fill="#fff" />
         </div>
