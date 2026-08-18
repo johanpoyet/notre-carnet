@@ -1289,15 +1289,66 @@ function OnboardingModal({ onSave }) {
   );
 }
 
+const PROPOSAL_STEPS = {
+  ask1: { text: "Veux-tu devenir officiellement ma petite amie ?", back: "pick" },
+  ask2: { text: "Es-tu sûre ?", back: "ask1" },
+  ask3: { text: "T'es vraiment sûre de faire ça ?", back: "ask2" },
+  ask4: { text: "Non mais attends, tu sais dans quoi tu t'embarques là ? (y'aura aucun retour en arrière possible)", back: "ask3" },
+};
+const PROPOSAL_NEXT = { ask1: "ask2", ask2: "ask3", ask3: "ask4" };
+
 function RolePickerModal({ settings, onPick }) {
+  const [step, setStep] = useState("pick");
+  const [pendingRole, setPendingRole] = useState(null);
+
+  function handleChoose(role, name) {
+    if (name.trim().toLowerCase() === "julia") {
+      setPendingRole(role);
+      setStep("ask1");
+    } else {
+      onPick(role);
+    }
+  }
+
+  function handleNo() {
+    const back = PROPOSAL_STEPS[step].back;
+    setStep(back);
+    if (back === "pick") setPendingRole(null);
+  }
+
+  function handleYes() {
+    if (step === "ask4") {
+      onPick(pendingRole, { celebrate: true });
+      return;
+    }
+    setStep(PROPOSAL_NEXT[step]);
+  }
+
+  if (step === "pick") {
+    return (
+      <div className="modal-overlay" style={{ alignItems: "center" }}>
+        <div className="modal-card" style={{ borderRadius: 22 }}>
+          <div className="modal-title">Et toi, tu es qui ?</div>
+          <div className="modal-sub">Cet appareil s'en souviendra pour le petit jeu de questions.</div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button className="btn btn-primary btn-block" onClick={() => handleChoose("A", settings.nameA)}>{settings.nameA}</button>
+            <button className="btn btn-primary btn-block" onClick={() => handleChoose("B", settings.nameB)}>{settings.nameB}</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="modal-overlay">
-      <div className="modal-card">
-        <div className="modal-title">Et toi, tu es qui ?</div>
-        <div className="modal-sub">Cet appareil s'en souviendra pour le petit jeu de questions.</div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button className="btn btn-primary btn-block" onClick={() => onPick("A")}>{settings.nameA}</button>
-          <button className="btn btn-primary btn-block" onClick={() => onPick("B")}>{settings.nameB}</button>
+    <div className="modal-overlay" style={{ alignItems: "center" }}>
+      <div className="modal-card" style={{ textAlign: "center", borderRadius: 22 }}>
+        <div className="onboarding-icon">
+          <Heart size={24} fill="#fff" />
+        </div>
+        <div className="modal-title" style={{ textAlign: "center" }}>{PROPOSAL_STEPS[step].text}</div>
+        <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
+          <button className="btn btn-berry btn-block" onClick={handleYes}>Oui</button>
+          <button className="btn btn-ghost btn-block" onClick={handleNo}>Non</button>
         </div>
       </div>
     </div>
@@ -1433,6 +1484,11 @@ export default function App() {
     setWelcomeBurst((n) => n + 1);
   }
 
+  function handleRolePick(role, opts) {
+    persistWhoami(role);
+    if (opts && opts.celebrate) setWelcomeBurst((n) => n + 1);
+  }
+
   async function resetAll() {
     await Promise.all([
       deleteShared("settings"),
@@ -1466,7 +1522,7 @@ export default function App() {
       <Confetti key={welcomeBurst} burstId={welcomeBurst} />
 
       {!settings && <OnboardingModal onSave={handleOnboardingSave} />}
-      {settings && !whoami && <RolePickerModal settings={settings} onPick={persistWhoami} />}
+      {settings && !whoami && <RolePickerModal settings={settings} onPick={handleRolePick} />}
 
       {settings && whoami && (
         <div className="cc-shell">
